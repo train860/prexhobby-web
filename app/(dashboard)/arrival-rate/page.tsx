@@ -1,20 +1,22 @@
 "use client"
 import DataTable, { TableRef } from "@/components/biz/data-table"
 import { OrderItem, columns } from "./components/columns"
-import { orders, addToCart } from "@/apis/order"
+import { arrivalRate } from "@/apis/order"
 import Page from "@/components/biz/page"
 import CustomCard from "@/components/biz/custom-card"
 import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { addDays, format, set } from "date-fns"
 import { useQuery } from "@tanstack/react-query"
 import { DatePickerWithRange } from "@/components/ui/date-range-picker"
-import { Suspense, useRef, useState } from "react"
+import { Suspense, useMemo, useRef, useState } from "react"
 import { DateRange } from "react-day-picker"
 import { useToast } from "@/components/ui/use-toast"
 
-export default function Orders() {
+export default function ArrivalRate() {
   const router = useRouter()
+
+  const searchParams = useSearchParams()
   const { toast } = useToast()
   const [submitting, setSubmitting] = useState(false)
   const tableRef = useRef<TableRef>(null)
@@ -22,31 +24,23 @@ export default function Orders() {
     from: addDays(new Date(), -7),
     to: new Date(),
   })
-  const [variables, setVariables] = useState({})
+  const defaultVariables = useMemo(() => {
+    const vars: Record<string, any> = {}
+    const keys = Array.from(searchParams.keys());
+    keys.forEach(k => {
+      vars[k] = searchParams.get(k)
+    })
+    return {
+      ...vars,
+    }
+  }, [])
+  const [variables, setVariables] = useState(defaultVariables)
   const { data, isLoading, refetch } = useQuery<any>({
-    queryKey: ["orders", variables],
-    queryFn: () => orders(variables),
+    queryKey: ["arrival-rate", variables],
+    queryFn: () => arrivalRate(variables),
     staleTime: 0,
   })
-  const handleAddToCart = () => {
-    const selection = tableRef.current?.rowSelection() || {}
-    const orderIds: string[] = Object.keys(selection)
-    if (!orderIds.length) {
-      toast({
-        variant: "destructive",
-        title: 'Error',
-        description: 'Please select at least one order',
-      })
-      return
-    }
-    setSubmitting(true)
-    addToCart(orderIds).then(() => {
-      tableRef.current?.clearSelection()
-      refetch()
-    }).finally(() => {
-      setSubmitting(false)
-    })
-  }
+
   const toolbar = (
     <div className="flex items-center gap-4">
       <DatePickerWithRange value={date} onChange={(value) => {
@@ -73,13 +67,7 @@ export default function Orders() {
     </div>
   )
   return (
-    <Page title="Orders" className="max-w-full" headerButtons={
-      [
-        <Button type="button" loading={submitting} key={'submit'} size="sm" onClick={() => {
-          handleAddToCart()
-        }}>Add to cart</Button>
-      ]
-    }>
+    <Page title="Orders" className="max-w-full">
       <CustomCard>
       <Suspense>
         <DataTable<OrderItem,unknown>
@@ -93,7 +81,11 @@ export default function Orders() {
             {
               enabled: true,
             }
-          } />
+          } 
+          onSearchParamsChange={(params) => {
+            setVariables(params)
+          }}
+          />
       </Suspense>
       </CustomCard>
     </Page>

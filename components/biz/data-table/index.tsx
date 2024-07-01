@@ -67,6 +67,7 @@ interface DataTableProps<TData, TValue> {
   toolbar?: boolean | React.ReactNode
   meta?:TableMeta<TData>
   onLoadingChange?: (isLoading: boolean) => void
+  onSearchParamsChange?: (params: Record<string, any>) => void
 }
 function useStableData(data: any) {
   const [stableData, setStableData] = React.useState(data);
@@ -99,6 +100,7 @@ const DataTable = <TData extends {id:string}, TValue>(
     toolbar = true,
     meta,
     onLoadingChange,
+    onSearchParamsChange,
   }: DataTableProps<TData, TValue>,
   ref: React.Ref<TableRef> | null
 ) => {
@@ -233,6 +235,7 @@ const DataTable = <TData extends {id:string}, TValue>(
     //router.push(`${pathname}?${search}`)
     window.history.replaceState({}, '', `${pathname}?${search}`)
     setVariables(data)
+    onSearchParamsChange?.(params)
   }
   const onDelete = () => {
     setAlterData({

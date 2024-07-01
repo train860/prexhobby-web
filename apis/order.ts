@@ -15,4 +15,12 @@ export async function orders(params: any) {
     params,
   });
 }
+//order-arrival-rate
+export async function arrivalRate(params: any) {
+  return request({
+    url: "/api/order-arrival-rate",
+    method: "GET",
+    params,
+  });
+}
 

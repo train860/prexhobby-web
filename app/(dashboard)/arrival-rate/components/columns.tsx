@@ -14,7 +14,7 @@ import { TColumn } from "@/components/biz/data-table"
 export type OrderItem = {
   id: string;
   width?: number;
-  canAddToCart?: boolean;
+  rate?: number;
   name: string;
   line_items: any[];
   created_at: string;
@@ -22,33 +22,6 @@ export type OrderItem = {
   shipping_address: any;
 }
 export const columns: TColumn<OrderItem,unknown>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => {
-      return (
-        <Checkbox
-        disabled={!row.original.canAddToCart}
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className={`translate-y-[2px] ${!row.original.canAddToCart?'bg-zinc-400':''}`}
-      />
-      )
-    },
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     id: "name",
     accessorKey: "name",
@@ -141,5 +114,24 @@ export const columns: TColumn<OrderItem,unknown>[] = [
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
+  },
+  {
+    id: "rate",
+    accessorKey: "rate",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Arrival Rate" />
+    ),
+    cell: ({ row }) => {
+      const rate=Number((row.original.rate ||0) * 100)
+      if (rate>=65){
+        return (
+          <Badge variant="success">{rate.toFixed(0)}%</Badge>
+        )
+      }
+      return (
+        <Badge variant="secondary">{rate.toFixed(0)}%</Badge>
+      )
+    },
+    enableSorting: true,
   },
 ]
