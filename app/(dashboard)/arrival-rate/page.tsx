@@ -13,7 +13,7 @@ import { Suspense, useMemo, useRef, useState } from "react"
 import { DateRange } from "react-day-picker"
 import { useToast } from "@/components/ui/use-toast"
 
-export default function ArrivalRate() {
+function ArrivalRate() {
   const router = useRouter()
 
   const searchParams = useSearchParams()
@@ -90,4 +90,9 @@ export default function ArrivalRate() {
       </CustomCard>
     </Page>
   )
+}
+export default function ArrivalRatePage() {
+  return <Suspense fallback={<div>Loading...</div>}>
+    <ArrivalRate />
+  </Suspense>
 }
