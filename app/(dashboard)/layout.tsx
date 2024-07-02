@@ -61,7 +61,7 @@ const Menus = () => {
       </Link>
       <Link
         href="/invoice"
-         className={pathname=='/cc'?activeClassName:className}
+         className={pathname=='/invoice'?activeClassName:className}
       >
         Invoice
       </Link>
