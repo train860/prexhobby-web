@@ -60,10 +60,10 @@ const Menus = () => {
         Arrival Rate
       </Link>
       <Link
-        href="#"
+        href="/invoice"
          className={pathname=='/cc'?activeClassName:className}
       >
-        Customers
+        Invoice
       </Link>
       <Link
         href="#"
