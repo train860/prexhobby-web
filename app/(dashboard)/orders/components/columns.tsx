@@ -20,6 +20,7 @@ export type OrderItem = {
   created_at: string;
   total_price: string;
   shipping_address: any;
+  skuStatus?: any;
 }
 export const columns: TColumn<OrderItem,unknown>[] = [
   {
@@ -108,14 +109,24 @@ export const columns: TColumn<OrderItem,unknown>[] = [
       <DataTableColumnHeader column={column} title="Items" />
     ),
     cell: ({ row }) => {
+      const skuStatus = row.original.skuStatus ||{}
       return(
         <>
           <h3 className="text-red-500">Total:{row.original.line_items.length} items</h3>
           {
             row.original.line_items.map((item:any)=>{
+              let className=""
+              if(skuStatus[item.sku]=='Out'){
+                className+=" line-through bg-sky-200"
+              }
+              if (skuStatus[item.sku]=='Y'){
+                className+=" bg-yellow-300"
+              }
               return(
-                <div key={item.sku} className="flex items-center gap-2">
-                  <p>{item.sku}x{item.quantity}</p>
+                <div key={item.sku} className={'flex items-center gap-2'}>
+                  <p className={className}>
+                    <Link href={`https://www.plamod.com/management#products?s=${item.sku}`} target="_blank">{item.sku}x{item.quantity}</Link>
+                  </p>
                 </div>
               )
             })
