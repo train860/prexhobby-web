@@ -67,7 +67,7 @@ function ArrivalRate() {
     </div>
   )
   return (
-    <Page title="Orders" className="max-w-full">
+    <Page title="Arrival Rate" className="max-w-full">
       <CustomCard>
       <Suspense>
         <DataTable<OrderItem,unknown>
