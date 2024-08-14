@@ -1,5 +1,5 @@
-"use client"
-import Link from "next/link"
+"use client";
+import Link from "next/link";
 import {
   Bell,
   CircleUser,
@@ -11,17 +11,17 @@ import {
   Search,
   ShoppingCart,
   Users,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,51 +29,50 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { usePathname } from "next/navigation"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { usePathname } from "next/navigation";
 
 const Menus = () => {
-  const pathname= usePathname()
-  let className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-  let activeClassName="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+  const pathname = usePathname();
+  let className =
+    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary";
+  let activeClassName =
+    "flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-muted-foreground transition-all hover:text-primary";
   return (
     <>
-      <Link
-        href="/"
-        className={pathname=='/'?activeClassName:className}
-      >
+      <Link href="/" className={pathname == "/" ? activeClassName : className}>
         Dashboard
       </Link>
       <Link
         href="/orders"
-        className={pathname=='/orders'?activeClassName:className}
+        className={pathname == "/orders" ? activeClassName : className}
       >
         Orders
       </Link>
-      
+
       <Link
         href="/arrival-rate"
-         className={pathname=='/arrival-rate'?activeClassName:className}
+        className={pathname == "/arrival-rate" ? activeClassName : className}
       >
         Arrival Rate
       </Link>
       <Link
         href="/invoice"
-         className={pathname=='/invoice'?activeClassName:className}
+        className={pathname == "/invoice" ? activeClassName : className}
       >
         Invoice
       </Link>
       <Link
-        href="#"
-        className={className}
+        href="/stock-request"
+        className={pathname == "/stock-request" ? activeClassName : className}
       >
-        Analytics
+        Stock Request
       </Link>
     </>
-  )
-}
+  );
+};
 
 export default function DashboardLayout({
   children,
@@ -177,5 +176,5 @@ export default function DashboardLayout({
         </main>
       </div>
     </div>
-  )
+  );
 }
