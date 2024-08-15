@@ -6,6 +6,7 @@ type RequestConfig = AxiosRequestConfig & {
 
 const instance = axios.create({
   baseURL: "http://localhost:9999",
+  //baseURL:"http://192.168.122.249:9999",
   timeout: 50000,
   withCredentials: false,
 })

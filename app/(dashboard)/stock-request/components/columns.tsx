@@ -10,6 +10,7 @@ export type OrderItem = {
   productName: string;
   sku: string;
   barcode: string;
+  product:any;
 }
 export default function columns(onButtonClick:(key:string)=>void){
   const columns: TColumn<OrderItem, unknown>[] = [
