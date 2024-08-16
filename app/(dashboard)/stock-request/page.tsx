@@ -37,7 +37,7 @@ function Invoice() {
     };
   }, []);
   const [variables, setVariables] = useState(defaultVariables);
-  const { data, isLoading, refetch } = useQuery<any>({
+  const { data: invoiceData, isLoading: invoiceLoading, refetch: invoiceRefetch } = useQuery<any>({
     queryKey: ["invoice", variables],
     queryFn: () => invoice2(variables),
     enabled: !!variables.orderId,
@@ -59,7 +59,11 @@ function Invoice() {
   const handleSubmit = () => {
     const selection = tableRef.current?.rowSelection() || {};
     const skus: string[] = Object.keys(selection);
-    if (!skus?.length) {
+    //get selected rows
+    const selectedRows = invoiceData?.items.filter((item: any) => {
+      return selection[item.sku];
+    });
+    if (!selectedRows?.length) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -69,7 +73,12 @@ function Invoice() {
     }
     const data = {
       requestId,
-      skus,
+      products: selectedRows.map((item: any) => {
+        return {
+          sku: item.sku,
+          quantity: Number(item.qty) || 1,
+        };
+      }),
     };
     setSubmitting(true);
     addProducts(data)
@@ -96,7 +105,7 @@ function Invoice() {
     const skus: string[] = Object.keys(selection);
     const rows: any[] = [];
 
-    data?.items.forEach((item: any) => {
+    invoiceData?.items.forEach((item: any) => {
       const sku = item.sku;
       if (skus.includes(sku)) {
         rows.push({
@@ -106,7 +115,7 @@ function Invoice() {
           Name: item.productName,
           "Volum/unit （cm）": item.product.specification || "",
           "Weight (g)": item.product.weight || "",
-          "Warehouse Inventory": "",
+          "Warehouse Inventory": item.qty,
         });
       }
     });
@@ -173,7 +182,7 @@ function Invoice() {
       <Input ref={inputRef} placeholder="Invoice order id here" />
       <Button
         type="button"
-        loading={isLoading}
+        loading={invoiceLoading}
         size="sm"
         onClick={() => {
           const orderId = inputRef.current?.value?.trim();
@@ -198,7 +207,7 @@ function Invoice() {
         type="button"
         variant={"destructive"}
         size="sm"
-        disabled={!requestId}
+        //disabled={!requestId}
         loading={submitting}
         onClick={() => {
           handleSubmit();
@@ -228,7 +237,7 @@ function Invoice() {
             queryKey="orders"
             columns={columns((key: string) => {})}
             pagination={false}
-            data={data?.items || []}
+            data={invoiceData?.items || []}
             toolbar={toolbar}
             selection={{
               enabled: true,
