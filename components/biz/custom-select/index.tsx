@@ -16,10 +16,10 @@ const CustomSelect = React.forwardRef<HTMLDivElement, Props>(({ id, options, pla
     //console.log('CustomSelect', rest,value,defaultValue,onChange)
     return (
         <Select onValueChange={onChange} value={String(value) || undefined} defaultValue={defaultValue}>
-            <SelectTrigger id={id} aria-label={placeholder}>
+            <SelectTrigger id={id} aria-label={placeholder} className={className}>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
-            <SelectContent className={className}>
+            <SelectContent>
                 {
                     options.map((option) => (
                         <SelectItem key={option.value} value={String(option.value)}>{option.label}</SelectItem>

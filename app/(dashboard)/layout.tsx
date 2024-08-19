@@ -49,7 +49,7 @@ const Menus = () => {
         href="/orders"
         className={pathname == "/orders" ? activeClassName : className}
       >
-        Orders
+        Add Cart
       </Link>
 
       <Link
@@ -69,6 +69,18 @@ const Menus = () => {
         className={pathname == "/stock-request" ? activeClassName : className}
       >
         Stock Request
+      </Link>
+      <Link
+        href="/products"
+        className={pathname == "/products" ? activeClassName : className}
+      >
+        Products
+      </Link>
+      <Link
+        href="/orders2"
+        className={pathname == "/orders2" ? activeClassName : className}
+      >
+        Orders
       </Link>
     </>
   );

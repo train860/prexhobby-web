@@ -17,6 +17,7 @@ import * as XLSX from "xlsx";
 import { addProducts, list } from "@/apis/request";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import CustomSelect from "@/components/biz/custom-select";
 
 function Invoice() {
   const router = useRouter();
@@ -24,6 +25,7 @@ function Invoice() {
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [requestId, setRequestId] = useState<string | undefined>(undefined);
+  const [type, setType] = useState<string>("invoice");
   const tableRef = useRef<TableRef>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const defaultVariables = useMemo(() => {
@@ -37,10 +39,14 @@ function Invoice() {
     };
   }, []);
   const [variables, setVariables] = useState(defaultVariables);
-  const { data: invoiceData, isLoading: invoiceLoading, refetch: invoiceRefetch } = useQuery<any>({
+  const {
+    data: invoiceData,
+    isLoading: invoiceLoading,
+    refetch: invoiceRefetch,
+  } = useQuery<any>({
     queryKey: ["invoice", variables],
     queryFn: () => invoice2(variables),
-    enabled: !!variables.orderId,
+    enabled: !!variables.orderId || !!variables.barcode,
     staleTime: 0,
   });
   const { data: requestsData, isLoading: requestsLoading } = useQuery<any>({
@@ -58,7 +64,6 @@ function Invoice() {
   }, [requestsData]);
   const handleSubmit = () => {
     const selection = tableRef.current?.rowSelection() || {};
-    const skus: string[] = Object.keys(selection);
     //get selected rows
     const selectedRows = invoiceData?.items.filter((item: any) => {
       return selection[item.sku];
@@ -179,26 +184,48 @@ function Invoice() {
   };
   const toolbar = (
     <div className="flex items-center gap-4">
-      <Input ref={inputRef} placeholder="Invoice order id here" />
+      <Input ref={inputRef} placeholder="Invoice order id or barcode" />
+      <CustomSelect
+        id="type"
+        className="w-40"
+        options={[
+          { label: "Invoice", value: "invoice" },
+          { label: "Product", value: "product" },
+        ]}
+        value={type}
+        onChange={(v) => {
+          setType(v);
+        }}
+      ></CustomSelect>
       <Button
         type="button"
         loading={invoiceLoading}
         size="sm"
         onClick={() => {
-          const orderId = inputRef.current?.value?.trim();
-          if (!orderId) {
+          const v = inputRef.current?.value?.trim();
+          if (!v) {
             toast({
               variant: "destructive",
               title: "Error",
-              description: "Please input order id!",
+              description: "Please input order id or barcode!",
             });
             return;
           }
-          setVariables({
-            ...variables,
-            ts: Date.now(),
-            orderId,
-          });
+          if (type === "invoice") {
+            setVariables({
+              ...variables,
+              ts: Date.now(),
+              orderId: v,
+              barcode: '',
+            });
+          } else {
+            setVariables({
+              ...variables,
+              ts: Date.now(),
+              barcode: v,
+              orderId: '',
+            });
+          }
         }}
       >
         Search
