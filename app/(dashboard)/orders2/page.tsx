@@ -91,7 +91,7 @@ export default function Orders2() {
       ],
       { origin: "A1" }
     );
-    XLSX.writeFile(workbook, `orders.xlsx`, { compression: true });
+    XLSX.writeFile(workbook, `orders.csv`, { compression: true });
   };
   const toolbar = (
     <div className="flex items-center gap-4">

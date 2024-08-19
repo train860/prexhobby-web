@@ -165,8 +165,8 @@ function Invoice() {
       <div className="mt-2">
         <RadioGroup
           value={requestId}
-          onChange={(e) => {
-            console.log(e);
+          onValueChange={(v) => {
+            setRequestId(String(v));
           }}
         >
           {list.map((request: any) => (
@@ -174,8 +174,8 @@ function Invoice() {
               key={String(request.requestId)}
               className="flex items-center space-x-2"
             >
-              <RadioGroupItem value={String(request.requestId)} />
-              <Label htmlFor="r1">{request.requestId}</Label>
+              <RadioGroupItem id={`r${request.requestId}`}  value={String(request.requestId)} />
+              <Label htmlFor={`r${request.requestId}`}>{request.requestId}</Label>
             </div>
           ))}
         </RadioGroup>
@@ -216,14 +216,14 @@ function Invoice() {
               ...variables,
               ts: Date.now(),
               orderId: v,
-              barcode: '',
+              barcode: "",
             });
           } else {
             setVariables({
               ...variables,
               ts: Date.now(),
               barcode: v,
-              orderId: '',
+              orderId: "",
             });
           }
         }}
