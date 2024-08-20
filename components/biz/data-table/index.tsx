@@ -74,6 +74,7 @@ interface DataTableProps<TData, TValue> {
   meta?: TableMeta<TData>;
   onLoadingChange?: (isLoading: boolean) => void;
   onSearchParamsChange?: (params: Record<string, any>) => void;
+  onSelectionClear?: () => void;
 }
 function useStableData(data: any) {
   const [stableData, setStableData] = React.useState(data);
@@ -107,6 +108,7 @@ const DataTable = <TData extends { id: string }, TValue>(
     getRowId,
     onLoadingChange,
     onSearchParamsChange,
+    onSelectionClear,
   }: DataTableProps<TData, TValue>,
   ref: React.Ref<TableRef> | null
 ) => {
@@ -241,6 +243,7 @@ const DataTable = <TData extends { id: string }, TValue>(
       return table.getState().rowSelection;
     },
     clearSelection: () => {
+      onSelectionClear?.()
       table.setRowSelection({});
     },
   }));
@@ -323,6 +326,7 @@ const DataTable = <TData extends { id: string }, TValue>(
                     variant="link"
                     className="px-0"
                     onClick={() => {
+                      onSelectionClear?.();
                       table.setRowSelection({});
                     }}
                   >

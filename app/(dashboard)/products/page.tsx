@@ -21,6 +21,7 @@ export default function Orders() {
   const tableRef = useRef<TableRef>(null)
   const [date, setDate] = useState<DateRange | undefined>(undefined)
   const [search, setSearch] = useState('')
+  const selectedRows = useRef<Record<string, any>>({});
   const [variables, setVariables] = useState<any>({
     startDate: date?.from ? format(date?.from!, 'yyyy-MM-dd') : undefined,
     endDate: date?.to ? format(date?.to!, 'yyyy-MM-dd') : undefined,
@@ -30,13 +31,36 @@ export default function Orders() {
     queryFn: () => products(variables),
     staleTime: 0,
   })
+  const handleUpdateSelectedRows = () => {
+    const selection = tableRef.current?.rowSelection() || {};
+    const keys: string[] = Object.keys(selection);
+    const rows: Record<string, any> = {};
+    data?.content.forEach((item: any) => {
+      const key = item.id;
+      if (keys.includes(key)) {
+        rows[key] = item;
+      }
+    });
+    selectedRows.current = {
+      ...selectedRows.current,
+      ...rows,
+    }
+  }
   const handleDownload = () => {
     const selection = tableRef.current?.rowSelection() || {};
     const keys: string[] = Object.keys(selection);
     const rows: any[] = [];
 
-    data?.content.forEach((item: any) => {
-      const key = item.id;
+    let mItems:any[] = data?.content || [];
+    const list=Object.values(selectedRows.current) ||[]
+    mItems=mItems.concat(list)
+    const mIds:string[]=[]
+
+    mItems.forEach((item: any) => {
+      const key = String(item.id);
+      if(mIds.includes(key)){
+        return
+      }
       if (keys.includes(key)) {
         rows.push({
           "Name": item.title,
@@ -47,6 +71,7 @@ export default function Orders() {
           "Pieces/Carton":  "",
           "Price":  "",
         });
+        mIds.push(key)
       }
     });
 
@@ -98,6 +123,7 @@ export default function Orders() {
         if(date && data.to){
           vars.endDate=format(date.to!, 'yyyy-MM-dd')
         }
+        handleUpdateSelectedRows()
         setVariables({
           ...vars
         })
@@ -118,6 +144,9 @@ export default function Orders() {
           pagination={false}
           data={data?.content || []}
           toolbar={toolbar}
+          onSelectionClear={() => {
+            selectedRows.current = {};
+          }}
           selection={
             {
               enabled: true,

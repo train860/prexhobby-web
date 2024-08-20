@@ -28,6 +28,7 @@ function Invoice() {
   const [type, setType] = useState<string>("invoice");
   const tableRef = useRef<TableRef>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const selectedRows = useRef<Record<string, any>>({});
   const defaultVariables = useMemo(() => {
     const vars: Record<string, any> = {};
     const keys = Array.from(searchParams.keys());
@@ -105,13 +106,34 @@ function Invoice() {
         setSubmitting(false);
       });
   };
+  const handleUpdateSelectedRows = () => {
+    const selection = tableRef.current?.rowSelection() || {};
+    const skus: string[] = Object.keys(selection);
+    const rows: Record<string, any> = {};
+    invoiceData?.items.forEach((item: any) => {
+      const sku = item.sku;
+      if (skus.includes(sku)) {
+        rows[sku] = item;
+      }
+    });
+    selectedRows.current = {
+      ...selectedRows.current,
+      ...rows,
+    }
+  }
   const handleExport = () => {
     const selection = tableRef.current?.rowSelection() || {};
     const skus: string[] = Object.keys(selection);
     const rows: any[] = [];
-
-    invoiceData?.items.forEach((item: any) => {
+    let mItems:any[] = invoiceData?.items || [];
+    const list=Object.values(selectedRows.current) ||[]
+    mItems=mItems.concat(list)
+    const mSkus:string[]=[]
+    mItems.forEach((item: any) => {
       const sku = item.sku;
+      if(mSkus.includes(sku)){
+        return
+      }
       if (skus.includes(sku)) {
         rows.push({
           "Carton Index": "",
@@ -122,9 +144,9 @@ function Invoice() {
           "Weight (g)": item.product.weight || "",
           "Warehouse Inventory": item.qty,
         });
+        mSkus.push(sku)
       }
     });
-
     if (!rows?.length) {
       toast({
         variant: "destructive",
@@ -211,6 +233,7 @@ function Invoice() {
             });
             return;
           }
+          handleUpdateSelectedRows()
           if (type === "invoice") {
             setVariables({
               ...variables,
@@ -271,6 +294,9 @@ function Invoice() {
             }}
             onSearchParamsChange={(params) => {
               setVariables(params);
+            }}
+            onSelectionClear={() => {
+              selectedRows.current = {};
             }}
             getRowId={(row) => row.sku}
           />
