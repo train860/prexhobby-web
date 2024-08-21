@@ -65,11 +65,26 @@ function Invoice() {
   }, [requestsData]);
   const handleSubmit = () => {
     const selection = tableRef.current?.rowSelection() || {};
-    //get selected rows
-    const selectedRows = invoiceData?.items.filter((item: any) => {
-      return selection[item.sku];
-    });
-    if (!selectedRows?.length) {
+    const skus: string[] = Object.keys(selection);
+    const rows: any[] = [];
+    let mItems: any[] = invoiceData?.items || [];
+    const list = Object.values(selectedRows.current) || []
+    mItems = mItems.concat(list)
+    const mSkus: string[] = []
+    mItems.forEach((item: any) => {
+      const sku = item.sku;
+      if (mSkus.includes(sku)) {
+        return
+      }
+      if (skus.includes(sku)) {
+        rows.push({
+          sku: item.sku,
+          quantity: Number(item.qty) || 1,
+        });
+      }
+    })
+
+    if (!rows?.length) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -79,12 +94,7 @@ function Invoice() {
     }
     const data = {
       requestId,
-      products: selectedRows.map((item: any) => {
-        return {
-          sku: item.sku,
-          quantity: Number(item.qty) || 1,
-        };
-      }),
+      products: rows,
     };
     setSubmitting(true);
     addProducts(data)
@@ -125,13 +135,13 @@ function Invoice() {
     const selection = tableRef.current?.rowSelection() || {};
     const skus: string[] = Object.keys(selection);
     const rows: any[] = [];
-    let mItems:any[] = invoiceData?.items || [];
-    const list=Object.values(selectedRows.current) ||[]
-    mItems=mItems.concat(list)
-    const mSkus:string[]=[]
+    let mItems: any[] = invoiceData?.items || [];
+    const list = Object.values(selectedRows.current) || []
+    mItems = mItems.concat(list)
+    const mSkus: string[] = []
     mItems.forEach((item: any) => {
       const sku = item.sku;
-      if(mSkus.includes(sku)){
+      if (mSkus.includes(sku)) {
         return
       }
       if (skus.includes(sku)) {
@@ -196,7 +206,7 @@ function Invoice() {
               key={String(request.requestId)}
               className="flex items-center space-x-2"
             >
-              <RadioGroupItem id={`r${request.requestId}`}  value={String(request.requestId)} />
+              <RadioGroupItem id={`r${request.requestId}`} value={String(request.requestId)} />
               <Label htmlFor={`r${request.requestId}`}>{request.requestId}</Label>
             </div>
           ))}
@@ -285,7 +295,7 @@ function Invoice() {
           <DataTable<OrderItem, unknown>
             ref={tableRef}
             queryKey="orders"
-            columns={columns((key: string) => {})}
+            columns={columns((key: string) => { })}
             pagination={false}
             data={invoiceData?.items || []}
             toolbar={toolbar}
