@@ -45,9 +45,9 @@ function Invoice() {
     isLoading: invoiceLoading,
     refetch: invoiceRefetch,
   } = useQuery<any>({
-    queryKey: ["invoice", variables],
+    queryKey: ["invoice2", variables],
     queryFn: () => invoice2(variables),
-    enabled: !!variables.orderId || !!variables.barcode,
+    enabled: !!variables.orderId || !!variables.sku,
     staleTime: 0,
   });
   const { data: requestsData, isLoading: requestsLoading } = useQuery<any>({
