@@ -216,7 +216,7 @@ function Invoice() {
   };
   const toolbar = (
     <div className="flex items-center gap-4">
-      <Input ref={inputRef} placeholder="Invoice order id or barcode" />
+      <Input ref={inputRef} placeholder="Invoice order id or sku" />
       <CustomSelect
         id="type"
         className="w-40"
@@ -239,7 +239,7 @@ function Invoice() {
             toast({
               variant: "destructive",
               title: "Error",
-              description: "Please input order id or barcode!",
+              description: "Please input order id or sku!",
             });
             return;
           }
@@ -249,13 +249,13 @@ function Invoice() {
               ...variables,
               ts: Date.now(),
               orderId: v,
-              barcode: "",
+              sku: "",
             });
           } else {
             setVariables({
               ...variables,
               ts: Date.now(),
-              barcode: v,
+              sku: v,
               orderId: "",
             });
           }
